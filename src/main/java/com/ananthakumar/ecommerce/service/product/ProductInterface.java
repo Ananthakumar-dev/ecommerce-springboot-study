@@ -1,11 +1,12 @@
 package com.ananthakumar.ecommerce.service.product;
 
 import com.ananthakumar.ecommerce.model.Product;
+import com.ananthakumar.ecommerce.requests.AddProductRequest;
 
 import java.util.List;
 
 public interface ProductInterface {
-    Product addProduct(Product product);
+    Product addProduct(AddProductRequest request);
 
     List<Product> getAllProducts();
 

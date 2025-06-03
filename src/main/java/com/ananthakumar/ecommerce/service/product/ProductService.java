@@ -1,7 +1,11 @@
 package com.ananthakumar.ecommerce.service.product;
 
+import com.ananthakumar.ecommerce.exception.NotFoundException;
+import com.ananthakumar.ecommerce.model.Category;
 import com.ananthakumar.ecommerce.model.Product;
+import com.ananthakumar.ecommerce.repository.CategoryRepository;
 import com.ananthakumar.ecommerce.repository.ProductRepository;
+import com.ananthakumar.ecommerce.requests.AddProductRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -11,10 +15,31 @@ import java.util.List;
 @RequiredArgsConstructor
 public class ProductService implements ProductInterface {
     private final ProductRepository productRepository;
+    private final CategoryRepository categoryRepository;
 
     @Override
-    public Product addProduct(Product product) {
-        return null;
+    public Product addProduct(AddProductRequest request) {
+
+        Category category = categoryRepository.findById(request.getCategoryId()).orElseThrow(() -> new NotFoundException("Category Not Found"));
+        Product product = storeProduct(request, category);
+        productRepository.save(product);
+
+        return product;
+    }
+
+    private Product storeProduct(
+            AddProductRequest request,
+            Category category
+    )
+    {
+        return new Product(
+            request.getName(),
+            request.getBrand(),
+            request.getPrice(),
+            request.getQuantity(),
+            request.getDescription(),
+                category
+        );
     }
 
     @Override
@@ -24,7 +49,7 @@ public class ProductService implements ProductInterface {
 
     @Override
     public Product getProductById(Long productId) {
-        return productRepository.findById(productId).orElseThrow(() -> new ProductNotFoundException("product Not Found"));
+        return productRepository.findById(productId).orElseThrow(() -> new NotFoundException("product Not Found"));
     }
 
     @Override
